@@ -128,6 +128,12 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# Tauri signing keys (NEVER commit private keys)
+*.key
+*.key.pub
+*.pem
+*.p12
+
 # yarn v2
 .yarn/cache
 .yarn/unplugged

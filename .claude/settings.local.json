@@ -42,7 +42,8 @@
       "Bash(npx --yes @aspect-build/aspect-cli --version)",
       "Bash(node -e \"try{require\\(''sharp''\\)}catch\\(e\\){console.log\\(''no sharp''\\)}\")",
       "Bash(node -e \":*)",
-      "Bash(pnpm tauri:*)"
+      "Bash(pnpm tauri:*)",
+      "Bash(cargo add:*)"
     ]
   }
 }

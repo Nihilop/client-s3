@@ -166,6 +166,14 @@ export default {
     refresh: 'Rafraichir',
   },
 
+  updater: {
+    available: 'Mise a jour disponible',
+    version: 'Version {version} disponible',
+    download: 'Mettre a jour',
+    downloading: 'Telechargement... {progress}%',
+    dismiss: 'Plus tard',
+  },
+
   settings: {
     title: 'Parametres',
     tabs: {

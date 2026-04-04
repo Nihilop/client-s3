@@ -166,6 +166,14 @@ export default {
     refresh: 'Refresh',
   },
 
+  updater: {
+    available: 'Update available',
+    version: 'Version {version} available',
+    download: 'Update now',
+    downloading: 'Downloading... {progress}%',
+    dismiss: 'Later',
+  },
+
   settings: {
     title: 'Settings',
     tabs: {

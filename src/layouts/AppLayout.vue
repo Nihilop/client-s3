@@ -5,6 +5,7 @@ import { useConnectionStore } from '@/stores/connection'
 import { useBrowserStore } from '@/stores/browser'
 import { useDragDrop } from '@/composables/useDragDrop'
 import { useI18n } from 'vue-i18n'
+import { useUpdater } from '@/composables/useUpdater'
 import { open as openFileDialog } from '@tauri-apps/plugin-dialog'
 import Titlebar from '@/components/titlebar/Titlebar.vue'
 import BucketList from '@/components/browser/BucketList.vue'
@@ -30,6 +31,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Progress } from '@/components/ui/progress'
 import {
   HardDrive,
   LogOut,
@@ -38,6 +40,8 @@ import {
   Upload,
   Search,
   Settings,
+  ArrowDownCircle,
+  X,
 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
@@ -45,6 +49,10 @@ const { t } = useI18n()
 const router = useRouter()
 const connectionStore = useConnectionStore()
 const browserStore = useBrowserStore()
+const { updateAvailable, downloading, progress, checkForUpdate, installUpdate, dismiss } = useUpdater()
+
+// Check for updates on mount (silent)
+checkForUpdate()
 
 const showCreateBucket = ref(false)
 const showCreateFolder = ref(false)
@@ -128,6 +136,26 @@ function disconnect() {
           </SidebarContent>
 
           <SidebarFooter>
+            <!-- Update banner -->
+            <div v-if="updateAvailable" class="mx-2 mb-2 rounded-md border border-primary/30 bg-primary/5 p-2.5">
+              <div class="flex items-start justify-between gap-1">
+                <div class="flex items-center gap-1.5">
+                  <ArrowDownCircle class="size-3.5 shrink-0 text-primary" />
+                  <span class="text-[11px] font-medium">{{ t('updater.version', { version: updateAvailable.version }) }}</span>
+                </div>
+                <button class="shrink-0 text-muted-foreground hover:text-foreground" @click="dismiss">
+                  <X class="size-3" />
+                </button>
+              </div>
+              <div v-if="downloading" class="mt-2">
+                <Progress :model-value="progress" class="h-1.5" />
+                <span class="mt-1 block text-[10px] text-muted-foreground">{{ t('updater.downloading', { progress }) }}</span>
+              </div>
+              <Button v-else size="sm" class="mt-2 h-6 w-full text-[11px]" @click="installUpdate">
+                {{ t('updater.download') }}
+              </Button>
+            </div>
+
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton @click="showSettings = true">
