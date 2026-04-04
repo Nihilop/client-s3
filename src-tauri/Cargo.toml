@@ -1,0 +1,43 @@
+[package]
+name = "client-s3"
+version = "0.1.0"
+description = "A modern S3 client built with Tauri"
+authors = ["nihil"]
+edition = "2021"
+
+[lib]
+name = "client_s3_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# AWS S3
+aws-sdk-s3 = { version = "1", features = ["behavior-version-latest"] }
+aws-config = { version = "1", features = ["behavior-version-latest"] }
+aws-credential-types = "1"
+aws-types = "1"
+
+# Async
+tokio = { version = "1", features = ["full"] }
+
+# Security - OS keyring for credential storage
+keyring = { version = "3", features = ["sync-secret-service", "windows-native", "apple-native"] }
+
+# Utils
+uuid = { version = "1", features = ["v4"] }
+mime_guess = "2"
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+thiserror = "2"
+sanitize-filename = "0.6"
+base64 = "0.22"
+

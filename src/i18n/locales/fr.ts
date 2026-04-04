@@ -1,0 +1,196 @@
+export default {
+  common: {
+    cancel: 'Annuler',
+    delete: 'Supprimer',
+    create: 'Creer',
+    creating: 'Creation...',
+    refresh: 'Rafraichir',
+    open: 'Ouvrir',
+    download: 'Telecharger',
+    upload: 'Uploader',
+    search: 'Rechercher',
+    error: 'Erreur',
+    disconnect: 'Deconnexion',
+    import: 'Importer',
+    export: 'Exporter',
+    unknown: 'inconnu',
+    copyUrl: "Copier l'URL",
+  },
+
+  titlebar: {
+    title: 'Client S3',
+    logo: 'S3',
+  },
+
+  auth: {
+    title: 'Client S3',
+    subtitle: 'Connectez-vous a votre stockage S3',
+    tabs: {
+      connect: 'Connexion',
+      profiles: 'Profils',
+    },
+    connect: {
+      title: 'Nouvelle connexion',
+      description: 'Choisissez un fournisseur ou configurez manuellement',
+      savedProfile: 'Profil sauvegarde',
+      choosePlaceholder: 'Choisir un profil...',
+      newConnection: 'Nouvelle connexion',
+      provider: 'Fournisseur S3',
+      documentation: 'Documentation {name}',
+      name: 'Nom de la connexion',
+      namePlaceholder: 'Mon serveur S3',
+      endpoint: 'Endpoint',
+      endpointPlaceholder: 'https://s3.example.com',
+      region: 'Region',
+      accessKey: 'Access Key ID',
+      secretKey: 'Secret Access Key',
+      secretReconnect: 'Entrez le secret pour reconnecter',
+      pathStyle: 'Path Style',
+      remember: 'Memoriser ce profil',
+      connecting: 'Connexion...',
+      submit: 'Se connecter',
+      defaultName: 'Connexion S3',
+      connectionError: 'Erreur de connexion',
+    },
+    profiles: {
+      title: 'Profils sauvegardes',
+      description: 'Gerez vos connexions sauvegardees',
+      empty: 'Aucun profil sauvegarde.',
+      emptyHint: 'Cochez "Memoriser ce profil" lors de la connexion.',
+      deleted: 'Profil supprime',
+      deleteTitle: 'Supprimer le profil ?',
+      deleteDescription: 'Cette action supprimera definitivement ce profil et ses credentials du keyring systeme.',
+      exported: '{count} profil(s) exporte(s)',
+      imported: '{count} profil(s) importe(s)',
+      invalidFormat: 'Format invalide',
+    },
+  },
+
+  browser: {
+    buckets: 'Buckets',
+    createBucket: 'Creer un bucket',
+    deleteBucket: 'Supprimer le bucket',
+    selectBucket: 'Selectionnez un bucket',
+    selectBucketFirst: "Selectionnez un bucket d'abord",
+    emptyFolder: 'Dossier vide',
+
+    table: {
+      name: 'Nom',
+      size: 'Taille',
+      modified: 'Modifie',
+    },
+
+    context: {
+      newFolder: 'Nouveau dossier',
+      uploadFiles: 'Uploader des fichiers',
+      deleteSelection: 'Supprimer la selection ({count})',
+    },
+
+    toast: {
+      downloaded: '{name} telecharge',
+      deleted: '{name} supprime',
+      urlCopied: 'URL copiee',
+      itemsDeleted: 'Elements supprimes',
+      filesUploaded: '{count} fichier(s) uploade(s)',
+      bucketCreated: 'Bucket "{name}" cree',
+      folderCreated: 'Dossier "{name}" cree',
+    },
+  },
+
+  dialogs: {
+    createBucket: {
+      title: 'Nouveau bucket',
+      description: 'Le nom doit etre en minuscules, sans espaces (a-z, 0-9, -, .)',
+      label: 'Nom du bucket',
+      placeholder: 'mon-bucket',
+    },
+    createFolder: {
+      title: 'Nouveau dossier',
+      description: 'Creer un dossier dans {location}',
+      label: 'Nom du dossier',
+      placeholder: 'nouveau-dossier',
+    },
+  },
+
+  preview: {
+    download: 'Telecharger',
+    copyUrl: "Copier l'URL",
+    tabs: {
+      preview: 'Apercu',
+      info: 'Infos',
+    },
+    tooLarge: "Fichier trop volumineux pour l'apercu",
+    videoUnsupported: 'Votre navigateur ne supporte pas la lecture video.',
+    audioUnsupported: 'Votre navigateur ne supporte pas la lecture audio.',
+    pdfTitle: 'PDF preview',
+    unknownType: 'Apercu non disponible pour ce type de fichier',
+    downloaded: '{name} telecharge',
+    urlCopied: 'URL copiee',
+    copyError: 'Erreur de copie',
+    meta: {
+      contentType: 'Content-Type',
+      size: 'Taille',
+      lastModified: 'Derniere modification',
+      etag: 'ETag',
+      storageClass: 'Storage Class',
+    },
+  },
+
+  command: {
+    placeholder: 'Rechercher fichiers, buckets, actions...',
+    searching: 'Recherche...',
+    noResults: 'Aucun resultat.',
+    groups: {
+      files: 'Fichiers',
+      buckets: 'Buckets',
+      actions: 'Actions',
+      connection: 'Connexion',
+    },
+    actions: {
+      createBucket: 'Creer un bucket',
+      newFolder: 'Nouveau dossier',
+      uploadFiles: 'Uploader des fichiers',
+      refresh: 'Rafraichir',
+      goUp: 'Remonter',
+    },
+  },
+
+  dropOverlay: {
+    title: 'Deposez vos fichiers ici',
+    subtitle: 'Les fichiers seront uploades dans le dossier courant',
+  },
+
+  layout: {
+    newFolder: 'Nouveau dossier',
+    upload: 'Uploader',
+    refresh: 'Rafraichir',
+  },
+
+  settings: {
+    title: 'Parametres',
+    tabs: {
+      general: 'General',
+      sessions: 'Sessions',
+    },
+    general: {
+      title: 'General',
+      theme: 'Theme',
+      themeDescription: "Choisissez le theme de l'interface",
+      themeLight: 'Clair',
+      themeDark: 'Sombre',
+      themeSystem: 'Systeme',
+      language: 'Langue',
+      languageDescription: "Choisissez la langue de l'interface",
+      langFr: 'Francais',
+      langEn: 'English',
+    },
+    sessions: {
+      title: 'Sessions',
+      description: 'Gerez vos profils de connexion sauvegardes',
+      empty: 'Aucun profil sauvegarde.',
+      deleted: 'Profil supprime',
+      deleteTitle: 'Supprimer le profil ?',
+      deleteDescription: 'Cette action supprimera definitivement ce profil et ses credentials du keyring systeme.',
+    },
+  },
+}
