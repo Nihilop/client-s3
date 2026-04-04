@@ -40,7 +40,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "REPLACE_WITH_YOUR_PUBLIC_KEY",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IERDQUY5RjQ0RjY4RTkwM0QKUldROWtJNzJSSit2M0Y1LzNiMDZYMS9mQTVtVmV4L1AzTk1wK1BIOE1qTE9FeitCVmRoT0t2QnAK",
       "endpoints": [
         "https://github.com/Nihilop/client-s3/releases/latest/download/latest.json"
       ]
