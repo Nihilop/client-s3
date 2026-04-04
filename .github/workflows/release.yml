@@ -9,7 +9,45 @@ permissions:
   contents: write
 
 jobs:
+  sync-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Update package.json
+        run: |
+          jq --arg v "${{ steps.version.outputs.VERSION }}" '.version = $v' package.json > tmp.json && mv tmp.json package.json
+
+      - name: Update Cargo.toml
+        run: |
+          sed -i '0,/^version = /s/^version = .*/version = "${{ steps.version.outputs.VERSION }}"/' src-tauri/Cargo.toml
+
+      - name: Update tauri.conf.json
+        run: |
+          jq --arg v "${{ steps.version.outputs.VERSION }}" '.version = $v' src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json src-tauri/Cargo.toml src-tauri/tauri.conf.json
+          git diff --cached --quiet && echo "No changes" || git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}"
+          git push origin main
+
+      - name: Move tag to updated commit
+        run: |
+          git tag -f ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }} --force
+
   build:
+    needs: sync-version
     strategy:
       fail-fast: false
       matrix:
@@ -18,11 +56,15 @@ jobs:
             target: x86_64-pc-windows-msvc
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+          - platform: macos-latest
+            target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -76,6 +118,7 @@ jobs:
 
             ### Downloads
             - **Windows**: `.msi` or `.exe` (NSIS installer)
+            - **macOS**: `.dmg` (Apple Silicon)
             - **Linux**: `.deb` or `.AppImage`
 
             Auto-update is supported — existing installations will be notified automatically.
