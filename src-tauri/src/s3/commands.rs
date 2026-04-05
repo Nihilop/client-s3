@@ -141,6 +141,57 @@ pub async fn search_objects(
 }
 
 #[tauri::command]
+pub async fn get_prefix_size(
+    state: State<'_, AppState>,
+    bucket: String,
+    prefix: String,
+) -> AppResult<PrefixSize> {
+    let client = get_client(&state).await?;
+    s3::get_prefix_size(&client, &bucket, &prefix).await
+}
+
+#[tauri::command]
+pub async fn list_object_versions(
+    state: State<'_, AppState>,
+    bucket: String,
+    key: String,
+) -> AppResult<Vec<ObjectVersion>> {
+    let client = get_client(&state).await?;
+    s3::list_object_versions(&client, &bucket, &key).await
+}
+
+#[tauri::command]
+pub async fn get_bucket_versioning(
+    state: State<'_, AppState>,
+    bucket: String,
+) -> AppResult<BucketVersioningStatus> {
+    let client = get_client(&state).await?;
+    s3::get_bucket_versioning(&client, &bucket).await
+}
+
+#[tauri::command]
+pub async fn delete_object_version(
+    state: State<'_, AppState>,
+    bucket: String,
+    key: String,
+    version_id: String,
+) -> AppResult<()> {
+    let client = get_client(&state).await?;
+    s3::delete_object_version(&client, &bucket, &key, &version_id).await
+}
+
+#[tauri::command]
+pub async fn restore_object_version(
+    state: State<'_, AppState>,
+    bucket: String,
+    key: String,
+    version_id: String,
+) -> AppResult<()> {
+    let client = get_client(&state).await?;
+    s3::restore_object_version(&client, &bucket, &key, &version_id).await
+}
+
+#[tauri::command]
 pub async fn upload_file(
     app: AppHandle,
     state: State<'_, AppState>,

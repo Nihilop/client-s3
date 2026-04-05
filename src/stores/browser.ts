@@ -7,6 +7,7 @@ export interface BrowserItem {
   name: string
   size: number
   lastModified: string | null
+  storageClass: string | null
   isFolder: boolean
 }
 
@@ -78,6 +79,7 @@ export const useBrowserStore = defineStore('browser', () => {
           name,
           size: 0,
           lastModified: null,
+          storageClass: null,
           isFolder: true,
         }
       })
@@ -87,6 +89,7 @@ export const useBrowserStore = defineStore('browser', () => {
         name: obj.display_name,
         size: obj.size,
         lastModified: obj.last_modified,
+        storageClass: obj.storage_class,
         isFolder: false,
       }))
 

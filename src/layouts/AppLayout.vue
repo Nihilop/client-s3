@@ -6,11 +6,14 @@ import { useBrowserStore } from '@/stores/browser'
 import { useDragDrop } from '@/composables/useDragDrop'
 import { useI18n } from 'vue-i18n'
 import { useUpdater } from '@/composables/useUpdater'
+import { useTransfers } from '@/composables/useTransfers'
 import { open as openFileDialog } from '@tauri-apps/plugin-dialog'
 import Titlebar from '@/components/titlebar/Titlebar.vue'
 import BucketList from '@/components/browser/BucketList.vue'
+import BookmarkList from '@/components/browser/BookmarkList.vue'
 import BreadcrumbNav from '@/components/browser/BreadcrumbNav.vue'
 import DropOverlay from '@/components/browser/DropOverlay.vue'
+import TransferPanel from '@/components/browser/TransferPanel.vue'
 import PreviewSheet from '@/components/preview/PreviewSheet.vue'
 import CreateBucketDialog from '@/components/dialogs/CreateBucketDialog.vue'
 import CreateFolderDialog from '@/components/dialogs/CreateFolderDialog.vue'
@@ -50,6 +53,8 @@ const router = useRouter()
 const connectionStore = useConnectionStore()
 const browserStore = useBrowserStore()
 const { updateAvailable, downloading, progress, checkForUpdate, installUpdate, dismiss } = useUpdater()
+const { init: initTransfers } = useTransfers()
+initTransfers()
 
 // Check for updates on mount (silent)
 checkForUpdate()
@@ -134,6 +139,7 @@ function disconnect() {
 
           <SidebarContent>
             <BucketList @create-bucket="showCreateBucket = true" />
+            <BookmarkList />
           </SidebarContent>
 
           <SidebarFooter>
@@ -234,12 +240,15 @@ function disconnect() {
           </header>
 
           <!-- Page content -->
-          <main class="relative flex-1 overflow-hidden">
-            <router-view
-              @create-folder="showCreateFolder = true"
-              @upload="handleUpload"
-            />
-            <DropOverlay :visible="isDragging" />
+          <main class="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div class="relative flex-1 overflow-hidden">
+              <router-view
+                @create-folder="showCreateFolder = true"
+                @upload="handleUpload"
+              />
+              <DropOverlay :visible="isDragging" />
+            </div>
+            <TransferPanel />
           </main>
         </SidebarInset>
       </SidebarProvider>

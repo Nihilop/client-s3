@@ -374,6 +374,174 @@ pub async fn search_objects(
     Ok(results)
 }
 
+/// Get the total size and object count for a prefix (folder) recursively
+pub async fn get_prefix_size(
+    client: &S3Client,
+    bucket: &str,
+    prefix: &str,
+) -> AppResult<PrefixSize> {
+    validate_bucket_name(bucket)?;
+
+    let mut total_size: u64 = 0;
+    let mut object_count: u64 = 0;
+    let mut continuation_token: Option<String> = None;
+
+    loop {
+        let mut req = client
+            .list_objects_v2()
+            .bucket(bucket)
+            .prefix(prefix)
+            .max_keys(1000);
+
+        if let Some(ref token) = continuation_token {
+            req = req.continuation_token(token);
+        }
+
+        let resp = req
+            .send()
+            .await
+            .map_err(|e| AppError::S3(e.to_string()))?;
+
+        for obj in resp.contents() {
+            total_size += obj.size().unwrap_or(0) as u64;
+            object_count += 1;
+        }
+
+        if resp.is_truncated() != Some(true) {
+            break;
+        }
+        continuation_token = resp.next_continuation_token().map(|s| s.to_string());
+    }
+
+    Ok(PrefixSize {
+        total_size,
+        object_count,
+    })
+}
+
+/// List all versions of an object
+pub async fn list_object_versions(
+    client: &S3Client,
+    bucket: &str,
+    key: &str,
+) -> AppResult<Vec<ObjectVersion>> {
+    validate_bucket_name(bucket)?;
+
+    let resp = client
+        .list_object_versions()
+        .bucket(bucket)
+        .prefix(key)
+        .send()
+        .await
+        .map_err(|e| AppError::S3(e.to_string()))?;
+
+    let mut versions: Vec<ObjectVersion> = Vec::new();
+
+    // Collect actual versions
+    for v in resp.versions() {
+        // Only include exact key matches (prefix listing can return other keys)
+        if v.key().unwrap_or_default() != key {
+            continue;
+        }
+        versions.push(ObjectVersion {
+            version_id: v.version_id().map(|s| s.to_string()),
+            is_latest: v.is_latest().unwrap_or(false),
+            last_modified: v.last_modified().map(|d| d.to_string()),
+            size: v.size().unwrap_or(0),
+            etag: v.e_tag().map(|s| s.to_string()),
+            is_delete_marker: false,
+        });
+    }
+
+    // Collect delete markers
+    for dm in resp.delete_markers() {
+        if dm.key().unwrap_or_default() != key {
+            continue;
+        }
+        versions.push(ObjectVersion {
+            version_id: dm.version_id().map(|s| s.to_string()),
+            is_latest: dm.is_latest().unwrap_or(false),
+            last_modified: dm.last_modified().map(|d| d.to_string()),
+            size: 0,
+            etag: None,
+            is_delete_marker: true,
+        });
+    }
+
+    Ok(versions)
+}
+
+/// Get bucket versioning status
+pub async fn get_bucket_versioning(
+    client: &S3Client,
+    bucket: &str,
+) -> AppResult<BucketVersioningStatus> {
+    validate_bucket_name(bucket)?;
+
+    let resp = client
+        .get_bucket_versioning()
+        .bucket(bucket)
+        .send()
+        .await
+        .map_err(|e| AppError::S3(e.to_string()))?;
+
+    let enabled = resp
+        .status()
+        .map(|s| s.as_str() == "Enabled")
+        .unwrap_or(false);
+
+    let mfa_delete = resp
+        .mfa_delete()
+        .map(|s| s.as_str() == "Enabled")
+        .unwrap_or(false);
+
+    Ok(BucketVersioningStatus { enabled, mfa_delete })
+}
+
+/// Delete a specific version of an object
+pub async fn delete_object_version(
+    client: &S3Client,
+    bucket: &str,
+    key: &str,
+    version_id: &str,
+) -> AppResult<()> {
+    validate_bucket_name(bucket)?;
+
+    client
+        .delete_object()
+        .bucket(bucket)
+        .key(key)
+        .version_id(version_id)
+        .send()
+        .await
+        .map_err(|e| AppError::S3(e.to_string()))?;
+
+    Ok(())
+}
+
+/// Restore a specific version (copy it as the latest)
+pub async fn restore_object_version(
+    client: &S3Client,
+    bucket: &str,
+    key: &str,
+    version_id: &str,
+) -> AppResult<()> {
+    validate_bucket_name(bucket)?;
+
+    let copy_source = format!("{}/{}?versionId={}", bucket, key, version_id);
+
+    client
+        .copy_object()
+        .bucket(bucket)
+        .key(key)
+        .copy_source(&copy_source)
+        .send()
+        .await
+        .map_err(|e| AppError::S3(e.to_string()))?;
+
+    Ok(())
+}
+
 /// Validate bucket name to prevent injection
 fn validate_bucket_name(name: &str) -> AppResult<()> {
     if name.is_empty() || name.len() > 63 {

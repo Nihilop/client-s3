@@ -15,6 +15,7 @@ export default {
     export: 'Export',
     unknown: 'unknown',
     copyUrl: 'Copy URL',
+    rename: 'Rename',
   },
 
   titlebar: {
@@ -77,6 +78,7 @@ export default {
     table: {
       name: 'Name',
       size: 'Size',
+      class: 'Class',
       modified: 'Modified',
     },
 
@@ -87,6 +89,7 @@ export default {
       cut: 'Cut',
       paste: 'Paste ({count})',
       deleteSelection: 'Delete selection ({count})',
+      calculateSize: 'Calculate size',
     },
 
     toast: {
@@ -102,6 +105,8 @@ export default {
       filesUploaded: '{count} file(s) uploaded',
       bucketCreated: 'Bucket "{name}" created',
       folderCreated: 'Folder "{name}" created',
+      renamed: '{old} renamed to {new}',
+      folderSize: '{name}: {size} ({count} objects)',
     },
   },
 
@@ -182,6 +187,16 @@ export default {
     dismiss: 'Later',
   },
 
+  transfers: {
+    title: 'Transfers',
+    active: '{count} active',
+    clear: 'Clear',
+    completed: 'Completed',
+    failed: 'Failed',
+    cancelled: 'Cancelled',
+    noTransfers: 'No transfers',
+  },
+
   settings: {
     title: 'Settings',
     tabs: {
@@ -208,5 +223,62 @@ export default {
       deleteTitle: 'Delete profile?',
       deleteDescription: 'This action will permanently delete this profile and its credentials from the system keyring.',
     },
+  },
+
+  properties: {
+    title: 'Properties',
+    key: 'Path',
+    size: 'Size',
+    contentType: 'Content type',
+    lastModified: 'Last modified',
+    etag: 'ETag',
+    storageClass: 'Storage class',
+    metadata: 'Metadata',
+    noMetadata: 'No metadata',
+  },
+
+  share: {
+    title: 'Share',
+    description: 'Generate a temporary link to share this file',
+    duration: 'Link duration',
+    presets: {
+      '15min': '15 min',
+      '1h': '1 hour',
+      '6h': '6 hours',
+      '24h': '24 hours',
+      '7d': '7 days',
+      '30d': '30 days',
+    },
+    generating: 'Generating...',
+    copy: 'Copy',
+    copied: 'Link copied',
+    expiresIn: 'Expires in {duration}',
+  },
+
+  versions: {
+    title: 'Versions',
+    description: 'Version history for {name}',
+    versionId: 'Version',
+    date: 'Date',
+    size: 'Size',
+    latest: 'Current',
+    deleteMarker: 'Deleted',
+    restore: 'Restore',
+    delete: 'Delete this version',
+    restored: 'Version restored',
+    deleted: 'Version deleted',
+    empty: 'No versions or versioning not enabled',
+    noVersioning: 'Versioning is not enabled on this bucket',
+  },
+
+  bookmarks: {
+    title: 'Bookmarks',
+    add: 'Add to bookmarks',
+    remove: 'Remove bookmark',
+    added: 'Bookmark added',
+    removed: 'Bookmark removed',
+    empty: 'No bookmarks',
+    emptyHint: 'Right-click to bookmark current folder',
+    namePrompt: 'Bookmark name',
   },
 }

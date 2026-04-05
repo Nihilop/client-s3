@@ -15,6 +15,7 @@ export default {
     export: 'Exporter',
     unknown: 'inconnu',
     copyUrl: "Copier l'URL",
+    rename: 'Renommer',
   },
 
   titlebar: {
@@ -77,6 +78,7 @@ export default {
     table: {
       name: 'Nom',
       size: 'Taille',
+      class: 'Classe',
       modified: 'Modifie',
     },
 
@@ -87,6 +89,7 @@ export default {
       cut: 'Couper',
       paste: 'Coller ({count})',
       deleteSelection: 'Supprimer la selection ({count})',
+      calculateSize: 'Calculer la taille',
     },
 
     toast: {
@@ -102,6 +105,8 @@ export default {
       filesUploaded: '{count} fichier(s) uploade(s)',
       bucketCreated: 'Bucket "{name}" cree',
       folderCreated: 'Dossier "{name}" cree',
+      renamed: '{old} renomme en {new}',
+      folderSize: '{name}: {size} ({count} objets)',
     },
   },
 
@@ -182,6 +187,16 @@ export default {
     dismiss: 'Plus tard',
   },
 
+  transfers: {
+    title: 'Transferts',
+    active: '{count} en cours',
+    clear: 'Effacer',
+    completed: 'Termine',
+    failed: 'Echoue',
+    cancelled: 'Annule',
+    noTransfers: 'Aucun transfert',
+  },
+
   settings: {
     title: 'Parametres',
     tabs: {
@@ -208,5 +223,62 @@ export default {
       deleteTitle: 'Supprimer le profil ?',
       deleteDescription: 'Cette action supprimera definitivement ce profil et ses credentials du keyring systeme.',
     },
+  },
+
+  properties: {
+    title: 'Proprietes',
+    key: 'Chemin',
+    size: 'Taille',
+    contentType: 'Type de contenu',
+    lastModified: 'Derniere modification',
+    etag: 'ETag',
+    storageClass: 'Classe de stockage',
+    metadata: 'Metadonnees',
+    noMetadata: 'Aucune metadonnee',
+  },
+
+  share: {
+    title: 'Partager',
+    description: 'Generez un lien temporaire pour partager ce fichier',
+    duration: 'Duree du lien',
+    presets: {
+      '15min': '15 min',
+      '1h': '1 heure',
+      '6h': '6 heures',
+      '24h': '24 heures',
+      '7d': '7 jours',
+      '30d': '30 jours',
+    },
+    generating: 'Generation...',
+    copy: 'Copier',
+    copied: 'Lien copie',
+    expiresIn: 'Expire dans {duration}',
+  },
+
+  versions: {
+    title: 'Versions',
+    description: 'Historique des versions de {name}',
+    versionId: 'Version',
+    date: 'Date',
+    size: 'Taille',
+    latest: 'Actuelle',
+    deleteMarker: 'Supprime',
+    restore: 'Restaurer',
+    delete: 'Supprimer cette version',
+    restored: 'Version restauree',
+    deleted: 'Version supprimee',
+    empty: 'Aucune version ou versioning non active',
+    noVersioning: 'Le versioning n\'est pas active sur ce bucket',
+  },
+
+  bookmarks: {
+    title: 'Favoris',
+    add: 'Ajouter aux favoris',
+    remove: 'Retirer des favoris',
+    added: 'Favori ajoute',
+    removed: 'Favori retire',
+    empty: 'Aucun favori',
+    emptyHint: 'Clic droit pour ajouter le dossier courant',
+    namePrompt: 'Nom du favori',
   },
 }

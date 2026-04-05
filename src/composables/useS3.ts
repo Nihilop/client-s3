@@ -32,6 +32,15 @@ export interface ListObjectsResult {
   is_truncated: boolean
 }
 
+export interface ObjectVersion {
+  version_id: string | null
+  is_latest: boolean
+  last_modified: string | null
+  size: number
+  etag: string | null
+  is_delete_marker: boolean
+}
+
 export interface PreviewData {
   content_type: string
   size: number
@@ -130,8 +139,29 @@ export function useS3() {
     return invoke<ObjectInfo[]>('search_objects', { bucket, query, maxResults })
   }
 
+  async function getPrefixSize(bucket: string, prefix: string) {
+    return invoke<{ total_size: number; object_count: number }>('get_prefix_size', { bucket, prefix })
+  }
+
+  async function listObjectVersions(bucket: string, key: string) {
+    return invoke<ObjectVersion[]>('list_object_versions', { bucket, key })
+  }
+
+  async function getBucketVersioning(bucket: string) {
+    return invoke<{ enabled: boolean; mfa_delete: boolean }>('get_bucket_versioning', { bucket })
+  }
+
+  async function deleteObjectVersion(bucket: string, key: string, versionId: string) {
+    return invoke<void>('delete_object_version', { bucket, key, versionId })
+  }
+
+  async function restoreObjectVersion(bucket: string, key: string, versionId: string) {
+    return invoke<void>('restore_object_version', { bucket, key, versionId })
+  }
+
   return {
     searchObjects,
+    getPrefixSize,
     createBucket,
     deleteBucket,
     listBuckets,
@@ -146,5 +176,9 @@ export function useS3() {
     uploadFile,
     downloadFile,
     getObjectPreview,
+    listObjectVersions,
+    getBucketVersioning,
+    deleteObjectVersion,
+    restoreObjectVersion,
   }
 }

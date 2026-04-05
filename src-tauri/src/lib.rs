@@ -39,10 +39,15 @@ pub fn run() {
             s3::commands::copy_object,
             s3::commands::move_object,
             s3::commands::search_objects,
+            s3::commands::get_prefix_size,
             s3::commands::get_presigned_url,
             s3::commands::upload_file,
             s3::commands::download_file,
             s3::commands::get_object_preview,
+            s3::commands::list_object_versions,
+            s3::commands::get_bucket_versioning,
+            s3::commands::delete_object_version,
+            s3::commands::restore_object_version,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

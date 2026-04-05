@@ -125,6 +125,28 @@ impl From<&ConnectionProfile> for ExportableProfile {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PrefixSize {
+    pub total_size: u64,
+    pub object_count: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ObjectVersion {
+    pub version_id: Option<String>,
+    pub is_latest: bool,
+    pub last_modified: Option<String>,
+    pub size: i64,
+    pub etag: Option<String>,
+    pub is_delete_marker: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BucketVersioningStatus {
+    pub enabled: bool,
+    pub mfa_delete: bool,
+}
+
 impl From<ExportableProfile> for ConnectionInput {
     fn from(p: ExportableProfile) -> Self {
         Self {

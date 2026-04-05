@@ -35,8 +35,13 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const connectionStore = useConnectionStore()
+
+  // On first navigation, restore session from Rust backend
+  if (!connectionStore.restored) {
+    await connectionStore.restoreSession()
+  }
 
   // If going to /app but not connected → redirect to auth
   if (to.meta.requiresAuth && !connectionStore.isConnected) {
