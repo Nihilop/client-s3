@@ -404,7 +404,7 @@ function connectToProfile(id: string) {
               </div>
 
               <div v-if="selectedProfileId === '__new__'" class="flex items-center gap-2">
-                <Checkbox id="save-profile" v-model:checked="saveProfile" />
+                <Checkbox id="save-profile" v-model:model-value="saveProfile" />
                 <Label for="save-profile" class="cursor-pointer text-xs font-normal text-muted-foreground">
                   {{ t('auth.connect.remember') }}
                 </Label>

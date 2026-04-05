@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { check, type Update } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
+import { toast } from 'vue-sonner'
 
 const updateAvailable = ref<Update | null>(null)
 const checking = ref(false)
@@ -24,7 +25,8 @@ export function useUpdater() {
   }
 
   async function installUpdate() {
-    if (!updateAvailable.value || downloading.value) return
+    const update = updateAvailable.value
+    if (!update || downloading.value) return
     downloading.value = true
     progress.value = 0
 
@@ -32,7 +34,7 @@ export function useUpdater() {
       let totalLength = 0
       let downloaded = 0
 
-      await updateAvailable.value.downloadAndInstall((event) => {
+      await update.downloadAndInstall((event) => {
         if (event.event === 'Started' && event.data.contentLength) {
           totalLength = event.data.contentLength
         } else if (event.event === 'Progress') {
@@ -44,8 +46,9 @@ export function useUpdater() {
       })
 
       await relaunch()
-    } catch {
+    } catch (e: any) {
       downloading.value = false
+      toast.error(typeof e === 'string' ? e : e.message ?? 'Update failed')
     }
   }
 

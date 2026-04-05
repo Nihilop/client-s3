@@ -50,6 +50,8 @@ const browserStore = useBrowserStore()
 const connectionStore = useConnectionStore()
 const s3 = useS3()
 
+defineExpose({ open })
+
 function handleKeydown(e: KeyboardEvent) {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault()
