@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useConnectionStore } from '@/stores/connection'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -10,6 +11,7 @@ const router = createRouter({
     {
       path: '/auth',
       component: () => import('@/layouts/AuthLayout.vue'),
+      meta: { requiresGuest: true },
       children: [
         {
           path: '',
@@ -21,6 +23,7 @@ const router = createRouter({
     {
       path: '/app',
       component: () => import('@/layouts/AppLayout.vue'),
+      meta: { requiresAuth: true },
       children: [
         {
           path: '',
@@ -30,6 +33,20 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to) => {
+  const connectionStore = useConnectionStore()
+
+  // If going to /app but not connected → redirect to auth
+  if (to.meta.requiresAuth && !connectionStore.isConnected) {
+    return { name: 'auth' }
+  }
+
+  // If going to /auth but already connected → redirect to app
+  if (to.meta.requiresGuest && connectionStore.isConnected) {
+    return { path: '/app' }
+  }
 })
 
 export default router
