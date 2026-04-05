@@ -1,6 +1,6 @@
 [package]
 name = "client-s3"
-version = "1.0.0"
+version = "1.0.1"
 description = "A modern S3 client built with Tauri"
 authors = ["nihil"]
 edition = "2021"
