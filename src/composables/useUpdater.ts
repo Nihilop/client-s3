@@ -1,9 +1,9 @@
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import { check, type Update } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { toast } from 'vue-sonner'
 
-const updateAvailable = ref<Update | null>(null)
+const updateAvailable = shallowRef<Update | null>(null)
 const checking = ref(false)
 const downloading = ref(false)
 const progress = ref(0)

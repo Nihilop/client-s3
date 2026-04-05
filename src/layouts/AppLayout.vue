@@ -57,7 +57,7 @@ checkForUpdate()
 const showCreateBucket = ref(false)
 const showCreateFolder = ref(false)
 const showSettings = ref(false)
-const commandPaletteRef = ref<InstanceType<typeof CommandPalette> | null>(null)
+const commandPaletteOpen = ref(false)
 const searchPreviewOpen = ref(false)
 const searchPreviewBucket = ref('')
 const searchPreviewKey = ref('')
@@ -223,7 +223,7 @@ function disconnect() {
 
               <Separator orientation="vertical" class="mx-1 h-4" />
 
-              <Button variant="ghost" size="sm" class="h-7 gap-1.5 text-xs text-muted-foreground" @click="commandPaletteRef && (commandPaletteRef.open = true)">
+              <Button variant="ghost" size="sm" class="h-7 gap-1.5 text-xs text-muted-foreground" @click="commandPaletteOpen = true">
                 <Search class="size-3" />
                 <span>{{ t('common.search') }}</span>
                 <kbd class="pointer-events-none ml-1 inline-flex h-5 items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
@@ -250,7 +250,7 @@ function disconnect() {
     <CreateFolderDialog v-model:open="showCreateFolder" />
     <SettingsDialog v-model:open="showSettings" />
     <CommandPalette
-      ref="commandPaletteRef"
+      v-model:model-value="commandPaletteOpen"
       @create-bucket="showCreateBucket = true"
       @create-folder="showCreateFolder = true"
       @upload="handleUpload"

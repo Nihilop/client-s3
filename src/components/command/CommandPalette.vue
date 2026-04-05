@@ -28,11 +28,16 @@ import {
 
 const { t } = useI18n()
 
+const props = defineProps<{
+  modelValue?: boolean
+}>()
+
 const emit = defineEmits<{
   createBucket: []
   createFolder: []
   upload: []
   openFile: [bucket: string, key: string]
+  'update:modelValue': [value: boolean]
 }>()
 
 interface SearchResult extends ObjectInfo {
@@ -40,6 +45,14 @@ interface SearchResult extends ObjectInfo {
 }
 
 const open = ref(false)
+
+watch(() => props.modelValue, (v) => {
+  if (v !== undefined) open.value = v
+})
+
+watch(open, (v) => {
+  emit('update:modelValue', v)
+})
 const searchQuery = ref('')
 const searchResults = ref<SearchResult[]>([])
 const searching = ref(false)
@@ -50,7 +63,6 @@ const browserStore = useBrowserStore()
 const connectionStore = useConnectionStore()
 const s3 = useS3()
 
-defineExpose({ open })
 
 function handleKeydown(e: KeyboardEvent) {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
