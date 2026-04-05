@@ -83,6 +83,9 @@ export default {
     context: {
       newFolder: 'New folder',
       uploadFiles: 'Upload files',
+      copy: 'Copy',
+      cut: 'Cut',
+      paste: 'Paste ({count})',
       deleteSelection: 'Delete selection ({count})',
     },
 
@@ -91,6 +94,11 @@ export default {
       deleted: '{name} deleted',
       urlCopied: 'URL copied',
       itemsDeleted: 'Items deleted',
+      selectionDeleted: '{count} item(s) deleted',
+      copied: '{count} item(s) copied',
+      cut: '{count} item(s) cut',
+      pasted: '{count} item(s) pasted',
+      moved: '{count} item(s) moved',
       filesUploaded: '{count} file(s) uploaded',
       bucketCreated: 'Bucket "{name}" created',
       folderCreated: 'Folder "{name}" created',

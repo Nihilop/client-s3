@@ -43,7 +43,9 @@
       "Bash(node -e \"try{require\\(''sharp''\\)}catch\\(e\\){console.log\\(''no sharp''\\)}\")",
       "Bash(node -e \":*)",
       "Bash(pnpm tauri:*)",
-      "Bash(cargo add:*)"
+      "Bash(cargo add:*)",
+      "Bash(find /f/Web_Projects/_Apps/client-s3 -type f -name *context* -o -name *menu*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

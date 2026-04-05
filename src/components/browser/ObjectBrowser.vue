@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useBrowserStore, type BrowserItem } from '@/stores/browser'
 import { useS3 } from '@/composables/useS3'
 import { useI18n } from 'vue-i18n'
@@ -31,6 +31,9 @@ import {
   ArrowUp,
   FileCode,
   Eye,
+  Clipboard,
+  ClipboardPaste,
+  Scissors,
 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
@@ -44,6 +47,12 @@ const emit = defineEmits<{
 const store = useBrowserStore()
 const s3 = useS3()
 const selectedKeys = ref<Set<string>>(new Set())
+
+// Clipboard for copy/cut/paste
+const clipboard = ref<{ bucket: string; keys: string[]; isCut: boolean } | null>(null)
+
+// Track last clicked index for Shift+Click range selection
+const lastClickedIndex = ref<number>(-1)
 
 // Preview
 const previewOpen = ref(false)
@@ -96,21 +105,44 @@ function formatDate(date: string | null): string {
 }
 
 function handleClick(item: BrowserItem, event: MouseEvent) {
-  if (item.isFolder) {
-    store.navigateToPrefix(item.key)
+  const currentIndex = store.items.findIndex(i => i.key === item.key)
+
+  // Shift+Click = range selection from last clicked to current
+  if (event.shiftKey && lastClickedIndex.value >= 0) {
+    const start = Math.min(lastClickedIndex.value, currentIndex)
+    const end = Math.max(lastClickedIndex.value, currentIndex)
+    // If not holding Ctrl, clear first
+    if (!event.ctrlKey && !event.metaKey) {
+      selectedKeys.value.clear()
+    }
+    for (let i = start; i <= end; i++) {
+      selectedKeys.value.add(store.items[i].key)
+    }
+    // Don't update lastClickedIndex on shift-click to allow extending range
     return
   }
 
+  // Ctrl+Click = toggle selection (works for files AND folders)
   if (event.ctrlKey || event.metaKey) {
     if (selectedKeys.value.has(item.key)) {
       selectedKeys.value.delete(item.key)
     } else {
       selectedKeys.value.add(item.key)
     }
-  } else {
-    selectedKeys.value.clear()
-    selectedKeys.value.add(item.key)
+    lastClickedIndex.value = currentIndex
+    return
   }
+
+  // Normal click on folder = navigate
+  if (item.isFolder) {
+    store.navigateToPrefix(item.key)
+    return
+  }
+
+  // Normal click on file = select only this one
+  selectedKeys.value.clear()
+  selectedKeys.value.add(item.key)
+  lastClickedIndex.value = currentIndex
 }
 
 function isSelected(item: BrowserItem) {
@@ -154,12 +186,111 @@ async function deleteSelected() {
   if (selectedKeys.value.size === 0) return
   try {
     await store.deleteItems([...selectedKeys.value])
+    const count = selectedKeys.value.size
     selectedKeys.value.clear()
-    toast.success(t('browser.toast.itemsDeleted'))
+    toast.success(t('browser.toast.selectionDeleted', { count }))
   } catch (e: any) {
     toast.error(typeof e === 'string' ? e : e.message)
   }
 }
+
+function copySelection() {
+  if (selectedKeys.value.size === 0 || !store.currentBucket) return
+  clipboard.value = {
+    bucket: store.currentBucket,
+    keys: [...selectedKeys.value],
+    isCut: false,
+  }
+  toast.success(t('browser.toast.copied', { count: selectedKeys.value.size }))
+}
+
+function cutSelection() {
+  if (selectedKeys.value.size === 0 || !store.currentBucket) return
+  clipboard.value = {
+    bucket: store.currentBucket,
+    keys: [...selectedKeys.value],
+    isCut: true,
+  }
+  toast.success(t('browser.toast.cut', { count: selectedKeys.value.size }))
+}
+
+async function pasteClipboard() {
+  if (!clipboard.value || !store.currentBucket) return
+  const { bucket: srcBucket, keys, isCut } = clipboard.value
+  try {
+    for (const sourceKey of keys) {
+      const fileName = sourceKey.split('/').filter(Boolean).pop() ?? sourceKey
+      const destKey = store.currentPrefix + fileName
+      if (isCut) {
+        await s3.moveObject(srcBucket, sourceKey, store.currentBucket, destKey)
+      } else {
+        await s3.copyObject(srcBucket, sourceKey, store.currentBucket, destKey)
+      }
+    }
+    toast.success(t(isCut ? 'browser.toast.moved' : 'browser.toast.pasted', { count: keys.length }))
+    if (isCut) clipboard.value = null
+    await store.loadObjects()
+  } catch (e: any) {
+    toast.error(typeof e === 'string' ? e : e.message)
+  }
+}
+
+// Keyboard shortcuts
+function handleKeydown(e: KeyboardEvent) {
+  // Ignore if user is typing in an input
+  const tag = (e.target as HTMLElement)?.tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return
+
+  // Del = delete selection
+  if (e.key === 'Delete' && selectedKeys.value.size > 0) {
+    e.preventDefault()
+    deleteSelected()
+    return
+  }
+
+  // Ctrl+C = copy selection
+  if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedKeys.value.size > 0) {
+    e.preventDefault()
+    copySelection()
+    return
+  }
+
+  // Ctrl+X = cut selection
+  if ((e.ctrlKey || e.metaKey) && e.key === 'x' && selectedKeys.value.size > 0) {
+    e.preventDefault()
+    cutSelection()
+    return
+  }
+
+  // Ctrl+V = paste
+  if ((e.ctrlKey || e.metaKey) && e.key === 'v' && clipboard.value) {
+    e.preventDefault()
+    pasteClipboard()
+    return
+  }
+
+  // Ctrl+A = select all
+  if ((e.ctrlKey || e.metaKey) && e.key === 'a' && store.items.length > 0) {
+    e.preventDefault()
+    selectedKeys.value.clear()
+    for (const item of store.items) {
+      selectedKeys.value.add(item.key)
+    }
+    return
+  }
+
+  // Escape = clear selection
+  if (e.key === 'Escape') {
+    selectedKeys.value.clear()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -235,10 +366,29 @@ async function deleteSelected() {
                   <Link class="mr-2 size-4" />
                   {{ t('common.copyUrl') }}
                 </ContextMenuItem>
+                <ContextMenuItem @click="copySelection()">
+                  <Clipboard class="mr-2 size-4" />
+                  {{ t('browser.context.copy') }}
+                  <span class="ml-auto text-xs text-muted-foreground">Ctrl+C</span>
+                </ContextMenuItem>
+                <ContextMenuItem @click="cutSelection()">
+                  <Scissors class="mr-2 size-4" />
+                  {{ t('browser.context.cut') }}
+                  <span class="ml-auto text-xs text-muted-foreground">Ctrl+X</span>
+                </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem class="text-destructive" @click="deleteItem(item)">
                   <Trash2 class="mr-2 size-4" />
                   {{ t('common.delete') }}
+                </ContextMenuItem>
+                <ContextMenuItem
+                  v-if="selectedKeys.size > 1"
+                  class="text-destructive"
+                  @click="deleteSelected()"
+                >
+                  <Trash2 class="mr-2 size-4" />
+                  {{ t('browser.context.deleteSelection', { count: selectedKeys.size }) }}
+                  <span class="ml-auto text-xs text-muted-foreground">Del</span>
                 </ContextMenuItem>
               </ContextMenuContent>
             </ContextMenu>
@@ -266,6 +416,11 @@ async function deleteSelected() {
         <Upload class="mr-2 size-4" />
         {{ t('browser.context.uploadFiles') }}
       </ContextMenuItem>
+      <ContextMenuItem v-if="clipboard" @click="pasteClipboard()">
+        <ClipboardPaste class="mr-2 size-4" />
+        {{ t('browser.context.paste', { count: clipboard.keys.length }) }}
+        <span class="ml-auto text-xs text-muted-foreground">Ctrl+V</span>
+      </ContextMenuItem>
       <ContextMenuSeparator />
       <ContextMenuItem @click="store.refresh()">
         <Copy class="mr-2 size-4" />
@@ -278,6 +433,7 @@ async function deleteSelected() {
       >
         <Trash2 class="mr-2 size-4" />
         {{ t('browser.context.deleteSelection', { count: selectedKeys.size }) }}
+        <span class="ml-auto text-xs text-muted-foreground">Del</span>
       </ContextMenuItem>
     </ContextMenuContent>
   </ContextMenu>

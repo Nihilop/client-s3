@@ -83,6 +83,9 @@ export default {
     context: {
       newFolder: 'Nouveau dossier',
       uploadFiles: 'Uploader des fichiers',
+      copy: 'Copier',
+      cut: 'Couper',
+      paste: 'Coller ({count})',
       deleteSelection: 'Supprimer la selection ({count})',
     },
 
@@ -91,6 +94,11 @@ export default {
       deleted: '{name} supprime',
       urlCopied: 'URL copiee',
       itemsDeleted: 'Elements supprimes',
+      selectionDeleted: '{count} element(s) supprime(s)',
+      copied: '{count} element(s) copie(s)',
+      cut: '{count} element(s) coupe(s)',
+      pasted: '{count} element(s) colle(s)',
+      moved: '{count} element(s) deplace(s)',
       filesUploaded: '{count} fichier(s) uploade(s)',
       bucketCreated: 'Bucket "{name}" cree',
       folderCreated: 'Dossier "{name}" cree',
